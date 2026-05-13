@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>DanikField — Играть</title>
+  <meta name="description" content="DanikField — Сапёр нового поколения. Тренируй вероятностное мышление."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div id="app">
+  <main>
+    <section class="play-layout">
+      <aside class="panel panel-left" id="game-settings-panel">
+        <div class="panel-header"><h2><i data-lucide="settings" style="width:16px;height:16px"></i> Режим</h2></div>
+        <div class="mode-selector">
+          <button class="mode-btn active" data-mode="classic" id="mode-classic">
+            <i data-lucide="crosshair" class="mode-btn-icon"></i>
+            <div class="mode-btn-text"><span class="mode-name">Классика</span><span class="mode-desc">Без лимита времени</span></div>
+          </button>
+          <button class="mode-btn" data-mode="speed" id="mode-speed">
+            <i data-lucide="timer" class="mode-btn-icon"></i>
+            <div class="mode-btn-text"><span class="mode-name">Speed Run</span><span class="mode-desc">2 минуты. Гонка!</span></div>
+          </button>
+          <button class="mode-btn" data-mode="zen" id="mode-zen">
+            <i data-lucide="heart" class="mode-btn-icon"></i>
+            <div class="mode-btn-text"><span class="mode-name">Zen Mode</span><span class="mode-desc">Без мин. Релакс</span></div>
+          </button>
+          <button class="mode-btn" data-mode="probability" id="mode-probability">
+            <i data-lucide="brain" class="mode-btn-icon"></i>
+            <div class="mode-btn-text"><span class="mode-name">Тренажёр</span><span class="mode-desc">Тренировка вероятностей</span></div>
+          </button>
+        </div>
+        <div class="section-title"><i data-lucide="sliders" style="width:14px;height:14px"></i> Сложность</div>
+        <div class="diff-buttons">
+          <button class="diff-btn active" data-diff="easy"><span>Новичок</span><small>9x9 · 10 мин</small></button>
+          <button class="diff-btn" data-diff="medium"><span>Средний</span><small>16x16 · 40 мин</small></button>
+          <button class="diff-btn" data-diff="hard"><span>Эксперт</span><small>30x16 · 99 мин</small></button>
+        </div>
+        <div class="toggle-group">
+          <label class="toggle-item"><span class="toggle-info"><span class="toggle-name"><i data-lucide="thermometer" style="width:13px;height:13px"></i> Heatmap</span><span class="toggle-desc">Вероятности мин</span></span><input type="checkbox" id="toggle-heatmap" class="toggle-input"><span class="toggle-switch"></span></label>
+          <label class="toggle-item"><span class="toggle-info"><span class="toggle-name"><i data-lucide="bot" style="width:13px;height:13px"></i> AI Coach</span><span class="toggle-desc">Подсказки от ИИ</span></span><input type="checkbox" id="toggle-coach" class="toggle-input" checked><span class="toggle-switch"></span></label>
+          <label class="toggle-item"><span class="toggle-info"><span class="toggle-name"><i data-lucide="volume-2" style="width:13px;height:13px"></i> Звуки</span><span class="toggle-desc">Звуковые эффекты</span></span><input type="checkbox" id="toggle-sound" class="toggle-input" checked><span class="toggle-switch"></span></label>
+        </div>
+      </aside>
+
+      <div class="game-area">
+        <div class="game-hud" id="game-hud">
+          <div class="hud-item"><i data-lucide="bomb" class="hud-icon"></i><span class="hud-value" id="mines-count">10</span><span class="hud-label">Мины</span></div>
+          <div class="hud-item"><i data-lucide="timer" class="hud-icon"></i><span class="hud-value timer-value" id="timer-display">00:00</span><span class="hud-label">Время</span></div>
+          <div class="hud-item"><i data-lucide="flame" class="hud-icon"></i><span class="hud-value" id="combo-display">x1</span><span class="hud-label">Комбо</span></div>
+          <div class="hud-item"><i data-lucide="star" class="hud-icon"></i><span class="hud-value" id="score-display">0</span><span class="hud-label">Очки</span></div>
+        </div>
+        <div class="speed-timer-bar" id="speed-timer-bar" style="display:none"><div class="speed-timer-fill" id="speed-timer-fill"></div></div>
+        <div class="board-wrapper" id="board-wrapper">
+          <div class="board-container" id="board-container"></div>
+          <div class="game-overlay" id="game-overlay" style="display:none">
+            <div class="overlay-content">
+              <div class="overlay-icon" id="overlay-icon"><i data-lucide="trophy"></i></div>
+              <h2 id="overlay-title">Game Over</h2>
+              <p id="overlay-subtitle"></p>
+              <div class="overlay-stats" id="overlay-stats"></div>
+              <div class="overlay-actions">
+                <button class="btn-primary" id="btn-retry"><i data-lucide="rotate-ccw" style="width:14px;height:14px"></i> Ещё раз</button>
+                <button class="btn-secondary" id="btn-share"><i data-lucide="share-2" style="width:14px;height:14px"></i> Поделиться</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-new-game" id="btn-new-game"><i data-lucide="play" style="width:16px;height:16px"></i> Новая игра</button>
+      </div>
+
+      <aside class="panel panel-right" id="ai-coach-panel">
+        <div class="panel-header"><h2><i data-lucide="bot" style="width:16px;height:16px"></i> AI Coach</h2><span class="coach-status" id="coach-status">Активен</span></div>
+        <div class="coach-messages" id="coach-messages">
+          <div class="coach-msg">
+            <div class="coach-avatar"><i data-lucide="brain" style="width:14px;height:14px"></i></div>
+            <div class="coach-bubble"><p>Привет! Я AI-помощник. Начни игру — буду анализировать ходы и подсказывать.</p></div>
+          </div>
+        </div>
+        <div class="coach-actions">
+          <button class="btn-coach" id="btn-hint"><i data-lucide="lightbulb"></i> Подсказка</button>
+          <button class="btn-coach" id="btn-analyze"><i data-lucide="scan-search"></i> Анализ</button>
+        </div>
+      </aside>
+    </section>
+  </main>
+</div>
+<div class="toast-container" id="toast-container"></div>
+<div class="modal-overlay" id="pro-modal" style="display:none">
+  <div class="modal-content stripe-modal">
+    <button class="modal-close" id="modal-close-pro"><i data-lucide="x" style="width:18px;height:18px"></i></button>
+    <div class="stripe-modal-header">
+      <div class="stripe-modal-badge"><i data-lucide="crown" style="width:14px;height:14px"></i> PRO</div>
+      <h2>DanikField Pro</h2>
+      <p class="stripe-modal-plan">Годовая подписка — $19.99/год</p>
+    </div>
+    <div class="stripe-modal-body">
+      <div id="stripe-payment-element"></div>
+      <div class="stripe-error" id="stripe-error" style="display:none"></div>
+      <button class="btn-pay" id="btn-pay" disabled>
+        <i data-lucide="lock" style="width:14px;height:14px"></i>
+        <span id="btn-pay-text">Оплатить $19.99</span>
+      </button>
+      <div class="stripe-footer">
+        <div class="stripe-secure"><i data-lucide="shield-check" style="width:14px;height:14px"></i><span>Безопасный платёж через Stripe</span></div>
+        <div class="stripe-test-hint"><i data-lucide="info" style="width:12px;height:12px"></i><span>Тест: 4242 4242 4242 4242, любая дата, CVC</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="share-modal" style="display:none">
+  <div class="modal-content" style="text-align:center">
+    <button class="modal-close" id="modal-close-share">x</button>
+    <h2>Поделиться результатом</h2>
+    <textarea class="share-text" id="share-text" readonly></textarea>
+    <div class="share-actions">
+      <button class="btn-primary" id="btn-copy-share"><i data-lucide="copy" style="width:14px;height:14px"></i> Копировать</button>
+      <button class="btn-secondary" id="btn-telegram-share"><i data-lucide="send" style="width:14px;height:14px"></i> Telegram</button>
+    </div>
+  </div>
+</div>
+<script type="module" src="/src/play.js"></script>
+</body>
+</html>

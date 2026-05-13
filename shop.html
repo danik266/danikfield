@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>DanikField — Магазин</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div id="app">
+  <main>
+    <div class="shop-layout">
+
+      <!-- Pro Section -->
+      <div class="pro-section" id="pro-section">
+        <div class="pro-hero">
+          <div class="pro-hero-left">
+            <span class="pro-tag"><i data-lucide="crown" style="width:13px;height:13px"></i> PRO</span>
+            <h1>Получи максимум<br>от DanikField</h1>
+            <ul class="pro-perks">
+              <li><i data-lucide="unlock" style="width:14px;height:14px"></i> Все скины и темы</li>
+              <li><i data-lucide="brain" style="width:14px;height:14px"></i> Безлимитный AI Coach</li>
+              <li><i data-lucide="bar-chart-3" style="width:14px;height:14px"></i> Детальная аналитика</li>
+              <li><i data-lucide="shield-off" style="width:14px;height:14px"></i> Без рекламы навсегда</li>
+            </ul>
+          </div>
+          <div class="pro-hero-right">
+            <div class="pro-plans">
+              <div class="plan-card" data-plan="month">
+                <span class="plan-period">Месяц</span>
+                <span class="plan-price">$2<small>.99</small></span>
+              </div>
+              <div class="plan-card best selected" data-plan="year">
+                <span class="plan-best-tag">Лучшая цена</span>
+                <span class="plan-period">Год</span>
+                <span class="plan-price">$19<small>.99</small></span>
+                <span class="plan-saving">–44%</span>
+              </div>
+              <div class="plan-card" data-plan="lifetime">
+                <span class="plan-period">Навсегда</span>
+                <span class="plan-price">$49<small>.99</small></span>
+              </div>
+            </div>
+            <button class="btn-get-pro" id="btn-upgrade-main">
+              <i data-lucide="crown" style="width:15px;height:15px"></i>
+              Получить Pro
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skins -->
+      <section class="shop-section">
+        <div class="shop-section-header">
+          <h2><i data-lucide="palette" style="width:18px;height:18px"></i> Скины ячеек</h2>
+          <span class="shop-section-hint">Нажми чтобы выбрать</span>
+        </div>
+        <div class="skins-grid" id="skins-grid"></div>
+      </section>
+
+      <!-- Themes -->
+      <section class="shop-section">
+        <div class="shop-section-header">
+          <h2><i data-lucide="sun-moon" style="width:18px;height:18px"></i> Темы оформления</h2>
+        </div>
+        <div class="themes-grid" id="themes-grid"></div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Stripe Modal -->
+<div class="modal-overlay" id="pro-modal" style="display:none">
+  <div class="modal-content stripe-modal">
+    <button class="modal-close" id="modal-close-pro">
+      <i data-lucide="x" style="width:18px;height:18px"></i>
+    </button>
+    <div class="stripe-modal-header">
+      <div class="stripe-modal-badge"><i data-lucide="crown" style="width:14px;height:14px"></i> PRO</div>
+      <h2>DanikField Pro</h2>
+      <p class="stripe-modal-plan" id="stripe-plan-label">Годовая подписка — $19.99/год</p>
+    </div>
+    <div class="stripe-modal-body">
+      <div id="stripe-payment-element"></div>
+      <div class="stripe-error" id="stripe-error" style="display:none"></div>
+      <button class="btn-pay" id="btn-pay" disabled>
+        <i data-lucide="lock" style="width:14px;height:14px"></i>
+        <span id="btn-pay-text">Оплатить $19.99</span>
+      </button>
+      <div class="stripe-footer">
+        <div class="stripe-secure">
+          <i data-lucide="shield-check" style="width:14px;height:14px"></i>
+          <span>Безопасный платёж через Stripe</span>
+        </div>
+        <div class="stripe-test-hint">
+          <i data-lucide="info" style="width:12px;height:12px"></i>
+          <span>Тест: 4242 4242 4242 4242, любая дата, любой CVC</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="/src/shop-entry.js"></script>
+</body>
+</html>

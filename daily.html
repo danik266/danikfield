@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>DanikField — Daily Challenge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div id="app">
+  <main>
+    <div class="daily-layout">
+      <div class="daily-header">
+        <div><span class="daily-label">DAILY CHALLENGE</span><h1 class="daily-date" id="daily-date"></h1><p class="daily-sub">Одинаковое поле для всех. Покажи лучший результат!</p></div>
+        <div class="daily-countdown"><span class="countdown-label">Следующий через</span><span class="countdown-time" id="countdown-time">--:--:--</span></div>
+      </div>
+      <div class="daily-game-area">
+        <div class="game-hud">
+          <div class="hud-item"><i data-lucide="bomb" class="hud-icon"></i><span class="hud-value" id="daily-mines">40</span><span class="hud-label">Мины</span></div>
+          <div class="hud-item"><i data-lucide="timer" class="hud-icon"></i><span class="hud-value timer-value" id="daily-timer">00:00</span><span class="hud-label">Время</span></div>
+          <div class="hud-item"><i data-lucide="target" class="hud-icon"></i><span class="hud-value" id="daily-accuracy">100%</span><span class="hud-label">Точность</span></div>
+        </div>
+        <div class="board-wrapper"><div class="board-container" id="daily-board-container"></div>
+          <div class="game-overlay" id="daily-overlay" style="display:none"><div class="overlay-content">
+            <div class="overlay-icon" id="daily-overlay-icon"><i data-lucide="trophy"></i></div>
+            <h2 id="daily-overlay-title"></h2><p id="daily-overlay-subtitle"></p>
+            <div class="overlay-stats" id="daily-overlay-stats"></div>
+            <div class="overlay-actions"><button class="btn-primary" id="btn-daily-share"><i data-lucide="share-2" style="width:14px;height:14px"></i> Поделиться</button></div>
+          </div></div>
+        </div>
+        <button class="btn-new-game" id="btn-start-daily"><i data-lucide="calendar-days" style="width:16px;height:16px"></i> Начать Daily Challenge</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin-top:1rem">
+        <h2 class="section-header"><i data-lucide="medal" style="width:18px;height:18px"></i> Сегодняшний рейтинг</h2>
+        <div id="daily-leaderboard-list"></div>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="toast-container" id="toast-container"></div>
+<div class="modal-overlay" id="pro-modal" style="display:none"><div class="modal-content" style="text-align:center"><button class="modal-close" id="modal-close-pro">x</button><h2>Upgrade to Pro</h2><button class="btn-pay" id="btn-pay">Оплатить $19.99/год</button></div></div>
+<script type="module" src="/src/daily-entry.js"></script>
+</body></html>
