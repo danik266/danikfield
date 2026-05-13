@@ -104,6 +104,13 @@ function checkIfPlayed() {
     btn.innerHTML = '<i data-lucide="check" style="width:16px;height:16px"></i> Уже сыграно';
     btn.style.opacity = '0.5';
     btn.style.cursor = 'not-allowed';
+    
+    // Update HUD with saved stats
+    document.getElementById('daily-mines').textContent = saved.won ? '0' : '--';
+    document.getElementById('daily-timer').textContent = formatTime(saved.time);
+    document.getElementById('daily-accuracy').textContent = saved.accuracy + '%';
+    document.getElementById('daily-timer').style.color = saved.won ? 'var(--success)' : 'var(--danger)';
+    
     if(window.lucide) window.lucide.createIcons();
     return true;
   }
