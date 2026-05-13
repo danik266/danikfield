@@ -87,13 +87,25 @@ function showResult(won) {
 
 function renderDailyLB() {
   const players = [
-    {name:'ProSweeper',time:'02:34',accuracy:'96%'},{name:'MineMaster',time:'03:12',accuracy:'92%'},
-    {name:'SafeClick',time:'03:45',accuracy:'100%'},{name:'BoomSlayer',time:'04:01',accuracy:'88%'},
+    {name:'ProSweeper',rawTime:154,rawAcc:96},
+    {name:'MineMaster',rawTime:192,rawAcc:92},
+    {name:'SafeClick',rawTime:225,rawAcc:100},
+    {name:'BoomSlayer',rawTime:241,rawAcc:88},
   ];
   const saved = loadData('mf_daily_result',null);
-  if(saved&&saved.date===getDailyDate()) players.push({name:'Вы',time:formatTime(saved.time),accuracy:saved.accuracy+'%'});
+  
+  if(saved && saved.date===getDailyDate() && saved.won) {
+    players.push({name:'Вы',rawTime:saved.time,rawAcc:saved.accuracy});
+  }
+  
+  // Sort by accuracy (descending), then by time (ascending)
+  players.sort((a,b) => {
+    if (b.rawAcc !== a.rawAcc) return b.rawAcc - a.rawAcc;
+    return a.rawTime - b.rawTime;
+  });
+  
   document.getElementById('daily-leaderboard-list').innerHTML = players.map((p,i) =>
-    `<div class="lb-entry"><span class="lb-rank">${i+1}</span><span class="lb-name">${p.name}</span><span class="lb-score">${p.time} · ${p.accuracy}</span></div>`).join('');
+    `<div class="lb-entry" style="${p.name==='Вы'?'background:var(--primary-dim)':''}"><span class="lb-rank">${i+1}</span><span class="lb-name">${p.name}</span><span class="lb-score">${formatTime(p.rawTime)} · ${p.rawAcc}%</span></div>`).join('');
 }
 
 function checkIfPlayed() {

@@ -73,6 +73,59 @@ export function formatTime(sec) {
 export function loadData(key, def) { try { return JSON.parse(localStorage.getItem(key)) || def; } catch { return def; } }
 export function saveData(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 
+// Auto-scale board to fit screen
+export function autoScaleBoard() {
+  const containers = document.querySelectorAll('.board-container');
+  containers.forEach(c => {
+    const wrapper = c.parentElement;
+    if (!wrapper) return;
+    
+    // Reset transform since we're no longer using it
+    c.style.transform = 'none';
+    c.style.margin = '0';
+    
+    // Default cell sizes based on media queries
+    const isMobile = window.innerWidth <= 600;
+    const isTiny = window.innerWidth <= 400;
+    let baseCellSize = 34;
+    if (isMobile) baseCellSize = 30;
+    if (isTiny) baseCellSize = 26;
+    
+    // Find number of columns from grid template
+    const colsMatch = c.style.gridTemplateColumns.match(/repeat\((\d+)/);
+    if (!colsMatch) return;
+    const cols = parseInt(colsMatch[1], 10);
+    if (!cols) return;
+
+    const sidebarWidth = isMobile ? 0 : (document.getElementById('sidebar')?.offsetWidth || 60);
+    const mainPadding = parseFloat(getComputedStyle(document.querySelector('main') || document.body).paddingLeft) || 20;
+    
+    // Safe available width
+    const availableWidth = window.innerWidth - sidebarWidth - (mainPadding * 2);
+    
+    // Grid gap is 2px, padding is 4px on each side (8px total)
+    // equation: cols * cell + (cols - 1) * 2 + 8 <= availableWidth
+    // cell = (availableWidth - (cols - 1) * 2 - 8) / cols
+    const maxCellSize = Math.floor((availableWidth - (cols - 1) * 2 - 8) / cols);
+    
+    const finalSize = Math.min(baseCellSize, Math.max(10, maxCellSize)); // min 10px so it doesn't disappear
+    c.style.setProperty('--cell-size', finalSize + 'px');
+  });
+}
+window.addEventListener('resize', () => {
+  clearTimeout(window.scaleTimeout);
+  window.scaleTimeout = setTimeout(autoScaleBoard, 50);
+});
+// Observer for dynamic boards
+const observer = new MutationObserver(() => {
+  autoScaleBoard();
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const app = document.getElementById('app');
+  if(app) observer.observe(app, { childList: true, subtree: true });
+  setTimeout(autoScaleBoard, 100); 
+});
+
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 export function playSound(type) {
   const osc = audioCtx.createOscillator();

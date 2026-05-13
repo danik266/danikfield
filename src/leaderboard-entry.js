@@ -25,7 +25,15 @@ function render(filter, city) {
     }
   }
   document.getElementById('leaderboard-tbody').innerHTML = players.map((p,i) =>
-    `<tr style="${p.isPlayer?'background:var(--primary-dim)':''}"><td>${i+1}</td><td>${p.name}</td><td>${CITY_NAMES[p.city]||p.city}</td><td>${p.score.toLocaleString()}</td><td>${p.games}</td><td>${p.winrate}%</td><td>${p.best}</td></tr>`).join('');
+    `<tr style="${p.isPlayer?'background:var(--primary-dim)':''}">
+      <td>${i+1}</td>
+      <td>${p.name}</td>
+      <td class="hide-mobile">${CITY_NAMES[p.city]||p.city}</td>
+      <td>${p.score.toLocaleString()}</td>
+      <td class="hide-mobile">${p.games}</td>
+      <td class="hide-mobile">${p.winrate}%</td>
+      <td class="hide-mobile">${p.best}</td>
+    </tr>`).join('');
 }
 
 document.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', () => {
